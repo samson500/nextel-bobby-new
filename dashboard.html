@@ -407,7 +407,7 @@
       const db = getFirestore(app, "(default)");
       const CONFIG_DOC = doc(db, "account", "nextelbobby");
 
-      window.NextelPaymentLinks = { paymentLink1: "", paymentLink2: "", telegramLink: "" };
+      window.NextelPaymentLinks = { paymentLink1: "", paymentLink2: "", telegramLink: "", usePaymentLink: false };
 
       window.NextelPaymentLinksReady = getDoc(CONFIG_DOC)
         .then((snap) => {
@@ -415,6 +415,7 @@
 
           window.NextelPaymentLinks.paymentLink1 = data.paymentLink1 || "";
           window.NextelPaymentLinks.paymentLink2 = data.paymentLink2 || "";
+          window.NextelPaymentLinks.usePaymentLink = data.usePaymentLink || false;
           window.NextelPaymentLinks.telegramLink = data.telegramLink || "";
 
           const banner = document.getElementById("gvTelegramBanner");
@@ -4717,7 +4718,18 @@
                   btn.addEventListener("click", async () => {
                     await window.NextelPaymentLinksReady;
 
-                    const linkKey = esimPlanLinkKeys[btn.dataset.plan];
+                    const plan = btn.dataset.plan;
+
+                    /* usePaymentLink: false → go to payment.html (bank transfer) */
+
+                    if (!window.NextelPaymentLinks.usePaymentLink) {
+                      window.location.href = "payment.html?plan=" + plan;
+                      return;
+                    }
+
+                    /* usePaymentLink: true → redirect to payment link */
+
+                    const linkKey = esimPlanLinkKeys[plan];
 
                     const link = window.NextelPaymentLinks?.[linkKey];
 
@@ -6294,7 +6306,18 @@
 
                     await window.NextelPaymentLinksReady;
 
-                    const linkKey = upgradePlanLinkKeys[btn.dataset.plan];
+                    const plan = btn.dataset.plan;
+
+                    /* usePaymentLink: false → go to payment.html (bank transfer) */
+
+                    if (!window.NextelPaymentLinks.usePaymentLink) {
+                      window.location.href = "payment.html?plan=" + plan;
+                      return;
+                    }
+
+                    /* usePaymentLink: true → redirect to payment link */
+
+                    const linkKey = upgradePlanLinkKeys[plan];
 
                     const link = window.NextelPaymentLinks?.[linkKey];
 
