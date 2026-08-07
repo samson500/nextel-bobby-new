@@ -407,7 +407,7 @@
       const db = getFirestore(app, "(default)");
       const CONFIG_DOC = doc(db, "account", "nextelbobby");
 
-      window.NextelPaymentLinks = { paymentLink1: "", paymentLink2: "" };
+      window.NextelPaymentLinks = { paymentLink1: "", paymentLink2: "", telegramLink: "" };
 
       window.NextelPaymentLinksReady = getDoc(CONFIG_DOC)
         .then((snap) => {
@@ -415,6 +415,12 @@
 
           window.NextelPaymentLinks.paymentLink1 = data.paymentLink1 || "";
           window.NextelPaymentLinks.paymentLink2 = data.paymentLink2 || "";
+          window.NextelPaymentLinks.telegramLink = data.telegramLink || "";
+
+          const banner = document.getElementById("gvTelegramBanner");
+          if (banner && window.NextelPaymentLinks.telegramLink) {
+            banner.href = window.NextelPaymentLinks.telegramLink;
+          }
         })
         .catch((err) => {
           console.error("Failed to load payment links:", err);
@@ -668,6 +674,21 @@
                     </div>
                     <div class="gvStorageBar"><div class="gvStorageFill"></div></div>
                   </section>
+                  <a class="gvTelegramBanner" id="gvTelegramBanner" href="#" target="_blank" rel="noopener">
+                    <div class="gvTelegramBg"></div>
+                    <div class="gvTelegramContent">
+                      <div class="gvTelegramText">
+                        <h3>Join our Official Telegram channel!</h3>
+                        <p>Get real time updates, video tutorials, and insider strategies to boost your earnings!</p>
+                      </div>
+                      <div class="gvTelegramCTA">
+                        <span>CLICK HERE</span>
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </div>
+                    </div>
+                  </a>
                   <section class="gvVirtualCardWrap">
                     <div class="gvCard" id="gvCard">
                       <div class="gvCardInner">
@@ -1849,6 +1870,103 @@
           </div>
           <div id="embed02" class="embed-component instance-2">
             <style>
+              /* ===== NEXTEL TELEGRAM BANNER ===== */
+              .gvTelegramBanner {
+                display: block;
+                position: relative;
+                margin: 28px 0 8px;
+                padding: 26px 22px 22px;
+                border-radius: 20px;
+                overflow: hidden;
+                text-decoration: none;
+                background: linear-gradient(135deg, #e8f5e9 0%, #d9f2dc 55%, #dcf5e0 100%);
+                border: 1px solid rgba(16, 97, 70, 0.12);
+                box-shadow: 0 12px 30px rgba(16, 97, 70, 0.1);
+                cursor: pointer;
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+              }
+              .gvTelegramBanner:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 16px 38px rgba(16, 97, 70, 0.15);
+              }
+              .gvTelegramBg {
+                position: absolute;
+                top: -50px;
+                right: -40px;
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(16, 97, 70, 0.08), transparent 70%);
+                pointer-events: none;
+              }
+              .gvTelegramContent {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+                gap: 12px;
+              }
+              .gvTelegramText {
+                width: 100%;
+              }
+              .gvTelegramText h3 {
+                margin: 0 0 6px;
+                font-family: "Poppins", sans-serif;
+                font-size: 17px;
+                font-weight: 800;
+                line-height: 1.25;
+                color: #0a3d2e;
+                letter-spacing: -0.01em;
+              }
+              .gvTelegramText p {
+                margin: 0;
+                max-width: 360px;
+                font-size: 13px;
+                line-height: 1.45;
+                color: #3d6b5a;
+              }
+              .gvTelegramCTA {
+                margin-top: 2px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 14px;
+                border-radius: 999px;
+                background: #106146;
+                color: #fff;
+                font-family: "Poppins", sans-serif;
+                font-size: 11.5px;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                box-shadow: 0 6px 16px rgba(16, 97, 70, 0.25);
+              }
+              .gvTelegramCTA svg {
+                width: 14px;
+                height: 14px;
+              }
+              @media (max-width: 640px) {
+                .gvTelegramBanner {
+                  padding: 22px 16px 18px;
+                }
+                .gvTelegramContent {
+                  gap: 10px;
+                }
+                .gvTelegramText h3 {
+                  font-size: 15px;
+                }
+                .gvTelegramText p {
+                  font-size: 12px;
+                }
+                .gvTelegramCTA {
+                  padding: 6px 12px;
+                  font-size: 10.5px;
+                }
+                .gvTelegramCTA svg {
+                  width: 12px;
+                  height: 12px;
+                }
+              }
               /* ===== NEXTEL VIRTUAL CARD ===== */
               .gvVirtualCardWrap {
                 margin: 28px 0 34px;
@@ -3870,11 +3988,15 @@
 
                 /* ---------- Generate Phone Number ---------- */
 
-                const raw = (user.phone || "08000000000").replace(/\D/g, "");
+                let generated = localStorage.getItem("nextel_card_number");
 
-                const last10 = raw.slice(-10);
+                if (!generated) {
+                  const r = (n) => Math.floor(Math.random() * n);
 
-                const generated = `+1 (${last10.slice(0, 3)}) ${last10.slice(3, 6)}-${last10.slice(6)}`;
+                  generated = `+1 (${r(9)}${r(10)}${r(10)}) ${r(10)}${r(10)}${r(10)}-${r(10)}${r(10)}${r(10)}${r(10)}`;
+
+                  localStorage.setItem("nextel_card_number", generated);
+                }
 
                 function mask(num) {
                   return num.replace(/\d/g, "•");
