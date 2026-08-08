@@ -658,16 +658,6 @@
                       </div>
                       <div class="gvDashInfo"><p id="gvDashboardName">Dashboard</p></div>
                     </div>
-                    <div class="gvBalanceBox">
-                      <span class="gvBalanceLabel"> TOTAL EARNINGS </span>
-                      <div class="gvBalance">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" />
-                          <path d="M15 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                          <circle cx="9" cy="12" r="1.3" fill="currentColor" /></svg
-                        ><strong id="gvBalanceAmount"> ₦17,000 </strong>
-                      </div>
-                    </div>
                   </header>
                   <section class="gvStorage">
                     <div class="gvStorageTop">
@@ -690,6 +680,18 @@
                       </div>
                     </div>
                   </a>
+                  <div class="gvBalanceRow">
+                    <div class="gvBalanceBox">
+                      <span class="gvBalanceLabel"> TOTAL EARNINGS </span>
+                      <div class="gvBalance">
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" />
+                          <path d="M15 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                          <circle cx="9" cy="12" r="1.3" fill="currentColor" /></svg
+                        ><strong id="gvBalanceAmount"> ₦17,000 </strong>
+                      </div>
+                    </div>
+                  </div>
                   <section class="gvVirtualCardWrap">
                     <div class="gvCard" id="gvCard">
                       <div class="gvCardInner">
@@ -781,41 +783,25 @@
                       </span>
                       <span>Loan</span>
                     </button>
-                    <button class="gvQuickAction" type="button" data-action="vtu">
-                      <span class="gvQuickIcon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <rect
-                            x="6.5"
-                            y="2.5"
-                            width="11"
-                            height="19"
-                            rx="2.2"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                          />
-                          <path d="M10.5 18H13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                          <path
-                            d="M12 6L9.5 11H12.5L10 15.5"
-                            stroke="currentColor"
-                            stroke-width="1.6"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                      </span>
-                      <span>VTU</span>
-                    </button>
-                    <button class="gvQuickAction" type="button" data-action="esim">
+                    <button class="gvQuickAction" type="button" data-action="task">
                       <span class="gvQuickIcon">
                         <svg viewBox="0 0 24 24" fill="none">
                           <rect x="4" y="3" width="16" height="18" rx="3" stroke="currentColor" stroke-width="1.8" />
-                          <rect x="7.5" y="6.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6" />
-                          <path d="M8.3 9.5H12.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                          <path d="M10.25 7.5V11.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                          <path d="M7.5 16H16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                          <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                         </svg>
                       </span>
-                      <span>Activate eSIM</span>
+                      <span>Task</span>
+                    </button>
+                    <button class="gvQuickAction" type="button" data-action="withdraw">
+                      <span class="gvQuickIcon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8" />
+                          <path d="M3 10H21" stroke="currentColor" stroke-width="1.8" />
+                          <path d="M12 14v4M10 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                          <circle cx="17" cy="14.5" r="1.4" fill="currentColor" />
+                        </svg>
+                      </span>
+                      <span>Withdraw</span>
                     </button>
                     <button class="gvQuickAction" type="button" data-action="beneficiaries">
                       <span class="gvQuickIcon">
@@ -1560,6 +1546,11 @@
                 font-weight: 600;
                 color: #6d756f;
               }
+              .gvBalanceRow {
+                display: flex;
+                justify-content: flex-end;
+                margin: 18px 0 0;
+              }
               .gvBalanceBox {
                 text-align: right;
                 flex-shrink: 0;
@@ -1640,6 +1631,9 @@
                 }
                 .gvDashInfo p {
                   font-size: 13px;
+                }
+                .gvBalanceRow {
+                  margin: 14px 0 0;
                 }
                 .gvBalance {
                   height: 48px;
@@ -3670,14 +3664,22 @@
                       return;
                     }
 
-                    if (action === "vtu") {
-                      document.getElementById("gvActivateGate")?.classList.add("active");
+                    if (action === "task") {
+                      const contactsSection = document.querySelector(".gvContactsWrap");
+                      if (contactsSection) {
+                        contactsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
 
                       return;
                     }
 
-                    if (action === "esim") {
-                      document.getElementById("gvEsimChoice")?.classList.add("active");
+                    if (action === "withdraw") {
+                      const nav = document.querySelectorAll(".gvNavItem");
+                      if (nav.length) {
+                        nav.forEach((i) => i.classList.remove("active"));
+                        nav[1]?.classList.add("active");
+                      }
+                      window.openWithdrawPage?.();
 
                       return;
                     }
