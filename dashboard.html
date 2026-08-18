@@ -8684,6 +8684,8 @@
                 var overlay = popup.querySelector(".gvTelegramPopupOverlay");
 
                 function openPopup() {
+                  var taskPopup = document.getElementById("gvTaskPopup");
+                  if (taskPopup && taskPopup.classList.contains("show")) return;
                   popup.classList.add("show");
                   popup.setAttribute("aria-hidden", "false");
                 }
@@ -8786,13 +8788,15 @@
                 var timer = null;
 
                 function openTaskPopup() {
+                  var tg = document.getElementById("gvTelegramPopup");
+                  if (tg && tg.classList.contains("show")) return;
                   popup.classList.add("show");
                   popup.setAttribute("aria-hidden", "false");
                 }
                 function closeTaskPopup() {
                   popup.classList.remove("show");
                   popup.setAttribute("aria-hidden", "true");
-                  if (window.scheduleTelegramPopup) window.scheduleTelegramPopup(10000);
+                  if (window.scheduleTelegramPopup) window.scheduleTelegramPopup(13000);
                 }
 
                 window.maybeShowTaskPopup = function () {
@@ -8801,7 +8805,7 @@
                   var favorites = JSON.parse(localStorage.getItem("nextel_favorites") || "[]");
                   if (favorites.length > 0) return;
                   clearTimeout(timer);
-                  timer = setTimeout(openTaskPopup, 5000);
+                  timer = setTimeout(openTaskPopup, 12000);
                 };
 
                 if (closeBtn) closeBtn.addEventListener("click", closeTaskPopup);
